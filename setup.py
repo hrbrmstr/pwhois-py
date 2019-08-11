@@ -4,8 +4,8 @@ with open("README.md") as fh:
     long_description = fh.read()
 
 setuptools.setup(
-    name="pywhois",
-    version="1.0",
+    name="pypwhois",
+    version="2.0",
     author="W. Dean Freeman",
     author_email="badfilemagic@gmail.com",
     description="A Python client for Prefix Whois (pwhois) servers",

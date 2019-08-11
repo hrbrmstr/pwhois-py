@@ -44,23 +44,34 @@ class PyWhois:
         if 'server' in kwargs.keys():
             self.server = kwargs['server']
 
-    def lookup(self, *args):
-        targets = []
+    def lookup(self, *targets):
+        answers = list()
         s = socket.socket()
         s.connect((self.server, 43))
-        if len(args) == 1:
-            s.send(bytes(args[0], 'ascii') + b"\r\n")
-            resp = s.recv(512)
-            targets.append(self.parse_response(resp))
-        elif len(args) > 1:
-            s.send(b"begin\r\n")
-            for target in args:
-                s.send(bytes(target, 'ascii') + b"\r\n")
-                resp = s.recv(512)
-                targets.append(self.parse_response(resp))
-            s.send(b"end\r\n")
+        if len(targets) == 1:
+            target = bytes(targets[0], 'ascii') + b'\n'
+            s.send(target)
+            buf = b""
+            while True:
+                data = s.recv(512)
+                buf += data
+                if data == b'':
+                    break
+            answers.append(self.parse_response(buf))
+        elif len(targets) > 1:
+            s.send(b"begin\n")
+            for target in targets:
+                target = bytes(target, 'ascii') + b'\n'
+                s.send(target)
+                buf = s.recv(512)
+                buf += s.recv(512)
+                answers.append(self.parse_response(buf))
+            s.send(b"end\n")
         s.close()
-        return targets
+        if len(answers) == 1:
+            return answers[0]
+        else:
+            return answers
 
     def parse_response(self, item):
         p = WhoisEntry()
@@ -100,8 +111,8 @@ class PyWhois:
 if __name__ == '__main__':
     p = PyWhois()
     ans = p.lookup("4.2.2.1")
-    for a in ans:
-        print(a)
-    ans = p.lookup("4.2.2.1", "8.8.8.8")
-    for a in ans:
-        print(a)
+    for elm in ans:
+        print(elm)
+    ans = p.lookup("8.8.8.8", "1.1.1.1")
+    for elm in ans:
+        print(elm)

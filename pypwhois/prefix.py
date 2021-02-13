@@ -91,7 +91,7 @@ class PyWhois:
                 p.org_name = fields[1]
             elif fields[0] == "Net-Name":
                 p.net_name = fields[1]
-            elif fields[0] == "Cache-Data":
+            elif fields[0] == "Cache-Date":
                 p.cache_date = int(fields[1])
             elif fields[0] == "Latitude":
                 p.lat = float(fields[1])
